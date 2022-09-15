@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 
 public class RecordMetrics {
 
-    private final AwsMetrics awsMetrics;
-    private final AzureMetrics azureMetrics;
+    private AwsMetrics awsMetrics;
+    private AzureMetrics azureMetrics;
 
     private MetricsKey awsKey;
     private MetricsKey azureKey;
@@ -33,8 +33,9 @@ public class RecordMetrics {
         options.add(MetricsOption.TOTAL_SUCCESSFUL_PUTS);
         options.add(MetricsOption.TOTAL_SUCCESSFUL_GETS);
 
-        awsMetrics = new AwsMetrics(awsKey);
-        azureMetrics = new AzureMetrics(azureKey);
+        new Thread(() -> awsMetrics = new AwsMetrics(awsKey)).start();
+
+        new Thread(() -> azureMetrics = new AzureMetrics(azureKey)).start();
     }
 
     public void putBlobAws(int size) throws InterruptedException {

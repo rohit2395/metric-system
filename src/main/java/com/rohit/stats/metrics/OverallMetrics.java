@@ -7,6 +7,7 @@ import com.rohit.stats.metrics.interfaces.MetricsConstants;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -32,7 +33,8 @@ public class OverallMetrics extends MetricsCounters implements MetricsConstants,
     private final HashMap<String,Metric> metricMap;
 
     // ---  Statics --------
-    private static OverallMetrics rootMetric = new OverallMetrics();
+    private static volatile OverallMetrics rootMetric;
+    private static final Object mutex = new Object();
     private static MetricRegistry registry;
 
     public static int getCount() {
@@ -73,10 +75,17 @@ public class OverallMetrics extends MetricsCounters implements MetricsConstants,
      * getMetrics()
      */
     public static OverallMetrics getOverallMetrics() {
-//        System.out.println("Getting overall metrics");
-        synchronized (rootMetric){
-            return rootMetric;
+        System.out.println("Getting overall metrics");
+        OverallMetrics instance = rootMetric;
+        if(instance == null){
+            synchronized (mutex){
+                instance = rootMetric;
+                if (instance == null){
+                    instance = rootMetric = new OverallMetrics();
+                }
+            }
         }
+        return instance;
     }  // -- end of getMetrics() --
 
     public MetricsKey getMetricsKey() { return metricsKey; }
