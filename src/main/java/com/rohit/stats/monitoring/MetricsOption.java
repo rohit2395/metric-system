@@ -9,7 +9,7 @@
  * wise divested of its trade secrets, irrespective of what has
  * been deposited with the U.S. Copyright Office.
  *******************************************************************************/
-package com.rohit.monitoring;
+package com.rohit.stats.monitoring;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,27 +18,13 @@ public enum MetricsOption
 {
     //PUT request metrics
     BYTES_UP,
-    PERSISTED_BYTES_UP,
     TOTAL_SUCCESSFUL_PUTS,
-    TOTAL_FAILED_PUTS,
-    TOTAL_PUT_RETRIES,
     PUT_TIME,
-    PERSISTED_PUT_TIME,
-    TOTAL_PART_ERRORS,
-    PART_ERRORS_TIME,
-    TOTAL_PERSISTED_PARTS,
-    TOTAL_PARTS_PUT,
 
     //GET request metrics
     BYTES_DOWN,
-    PERSISTED_BYTES_DOWN,
     TOTAL_SUCCESSFUL_GETS,
-    TOTAL_FAILED_GETS,
-    TOTAL_GET_RETRIES,
-    GET_TIME,
-    PERSISTED_GET_TIME,
-    TOTAL_GET_ERRORS,
-    GET_ERRORS_TIME;
+    GET_TIME;
 
     private static final Map<String, MetricsOption> optionMap = new HashMap<String, MetricsOption>();
     static

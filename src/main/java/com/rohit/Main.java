@@ -1,8 +1,16 @@
 package com.rohit;
 
+import com.rohit.stats.RecordMetrics;
+
 import java.util.Scanner;
 
 public class Main {
+
+    public static int askSize(){
+        Scanner sc = new Scanner(System.in);
+        System.out.print("What is the size of the blob (it bytes)? : ");
+        return sc.nextInt();
+    }
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -13,49 +21,48 @@ public class Main {
         while (true){
             System.out.println("=======================================");
             System.out.println("Please select the operation to perform");
-            System.out.println("1. Put Blob");
-            System.out.println("2. Get Blob");
-            System.out.println("3. Put Blob Failed");
-            System.out.println("4. Get Blob Failed");
-            System.out.println("5. Put Blob Retry");
-            System.out.println("6. Get Blob Retry");
-            System.out.println("7. Print stats");
+            System.out.println("1. Put Blob AWS");
+            System.out.println("2. Get Blob AWS");
+            System.out.println("3. Print stats AWS");
+            System.out.println("4. Put Blob AZURE");
+            System.out.println("5. Get Blob AZURE");
+            System.out.println("6. Print stats AZURE");
+            System.out.println("7. Print stats Overall");
             System.out.println("8. EXIT");
             System.out.println("=======================================");
-            System.out.println();
             System.out.print("Your choice: ");
             int choice = sc.nextInt();
             int size = 0;
-            if(choice != 8) {
-                System.out.print("What is the size of the blob (it bytes)? : ");
-                size = sc.nextInt();
-            }
-            System.out.println("=======================================");
-            System.out.println();
             switch (choice){
                 case 1:
-                    rc.putBlob(size);
+                    size = askSize();
+                    rc.putBlobAws(size);
                     break;
                 case 2:
-                    rc.getBlob(size);
+                    size = askSize();
+                    rc.getBlobAws(size);
                     break;
                 case 3:
-                    rc.putBlobFailed(size);
+                    rc.printStatsAws();
                     break;
                 case 4:
-                    rc.getBlobFailed(size);
+                    size = askSize();
+                    rc.putBlobAzure(size);
                     break;
                 case 5:
-                    rc.putBlobRetry(size);
+                    size = askSize();
+                    rc.getBlobAzure(size);
                     break;
                 case 6:
-                    rc.getBlobRetry(size);
+                    rc.printStatsAzure();
                     break;
                 case 7:
-                    rc.printStats();
+                    rc.printStatsAll();
+                    break;
                 default:
                     System.exit(0);
             }
+            System.out.println("=======================================");
             System.out.println();
         }
 

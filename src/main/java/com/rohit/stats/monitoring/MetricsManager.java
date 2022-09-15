@@ -9,14 +9,10 @@
  *  wise divested of its trade secrets, irrespective of what has
  *  been deposited with the U.S. Copyright Office.
  *******************************************************************************/
-package com.rohit.monitoring;
+package com.rohit.stats.monitoring;
 
-import com.rohit.metrics.MetricsConstants;
-import com.rohit.metrics.MetricsKey;
-import com.rohit.metrics.OverallMetrics;
-import com.rohit.metrics.SetGetMetrics;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.rohit.stats.metrics.interfaces.MetricsConstants;
+import com.rohit.stats.metrics.MetricsKey;
 
 import javax.management.*;
 import java.io.IOException;
@@ -71,7 +67,7 @@ public class MetricsManager
                     MBeanException, ReflectionException, IOException
     {
 
-        ObjectName metric = new ObjectName(METRICS_PREFIX + MetricsConstants.DEFAULT + "." + metricsKey.getContainer() + "." + metricsKey.getCsap() + "." + name);
+        ObjectName metric = new ObjectName(METRICS_PREFIX + metricsKey.getKeyName()  + "." + name);
         Long result=0L;
         try
         {
@@ -85,7 +81,7 @@ public class MetricsManager
                 Object object = server.getAttribute(metric, "Count");
                 result = (Long) object;
             }else {
-//                System.out.println("Metric is not registered : "+ metric);
+                System.out.println("Metric is not registered : "+ metric);
             }
         }
         catch (InstanceNotFoundException e)
@@ -112,84 +108,26 @@ public class MetricsManager
                 Long count = getCountMetrics(MetricsConstants.TotalBytesUp,metricsKey);
                 result.setBytesUp(count);
                 break;
-            case PERSISTED_BYTES_UP:
-                count = getCountMetrics(MetricsConstants.TotalPersistedBytesUp,metricsKey);
-                result.setPersitedBytesUp(count);
-                break;
             case TOTAL_SUCCESSFUL_PUTS:
                 count = getCountMetrics(MetricsConstants.TotalSuccessfulPutRequests,metricsKey);
                 result.setTotalSuccessfulPuts(count);
-                break;
-            case TOTAL_FAILED_PUTS:
-                count = getCountMetrics(MetricsConstants.TotalFailedPutRequests,metricsKey);
-                result.setTotalFailedPuts(count);
-                break;
-            case TOTAL_PUT_RETRIES:
-                count = getCountMetrics(MetricsConstants.TotalNumberOfPutRetries,metricsKey);
-                result.setTotalPutRetries(count);
                 break;
             case PUT_TIME:
                 count = getCountMetrics(MetricsConstants.TotalPutTime,metricsKey);
                 result.setPutTime(count);
                 break;
-            case PERSISTED_PUT_TIME:
-                count = getCountMetrics(MetricsConstants.TotalPersistedPutTime,metricsKey);
-                result.setPersistedPutTime(count);
-                break;
-            case TOTAL_PART_ERRORS:
-                count = getCountMetrics(MetricsConstants.TotalPartErrors,metricsKey);
-                result.setTotalPartErrors(count);
-                break;
-            case PART_ERRORS_TIME:
-                count = getCountMetrics(MetricsConstants.TotalPartErrorsTime,metricsKey);
-                result.setPartErrorsTime(count);
-                break;
-            case TOTAL_PERSISTED_PARTS:
-                count = getCountMetrics(MetricsConstants.TotalPartsPersisted,metricsKey);
-                result.setTotalPersistedParts(count);
-                break;
-            case TOTAL_PARTS_PUT:
-                count = getCountMetrics(MetricsConstants.TotalPartsPut,metricsKey);
-                result.setTotalPartsPut(count);
-                break;
-
             // Get Request metrics
             case BYTES_DOWN:
                 count = getCountMetrics(MetricsConstants.TotalBytesDown,metricsKey);
                 result.setBytesDown(count);
                 break;
-            case PERSISTED_BYTES_DOWN:
-                count = getCountMetrics(MetricsConstants.TotalPersistedBytesDown,metricsKey);
-                result.setPersitedBytesDown(count);
+            case GET_TIME:
+                count = getCountMetrics(MetricsConstants.TotalGetTime,metricsKey);
+                result.setGetTime(count);
                 break;
             case TOTAL_SUCCESSFUL_GETS:
                 count = getCountMetrics(MetricsConstants.TotalSuccessfulGetRequests,metricsKey);
                 result.setTotalSuccessfulGets(count);
-                break;
-            case TOTAL_FAILED_GETS:
-                count = getCountMetrics(MetricsConstants.TotalFailedGetRequests,metricsKey);
-                result.setTotalFailedGets(count);
-                break;
-            case TOTAL_GET_RETRIES:
-                count = getCountMetrics(MetricsConstants.TotalNumberOfGetRetries,metricsKey);
-                result.setTotalGetRetries(count);
-                break;
-            case GET_TIME:
-                count = getCountMetrics(MetricsConstants.TotalGetBlobDataTime,metricsKey);
-                count += getCountMetrics(MetricsConstants.TotalGetBlobTime,metricsKey);
-                result.setGetTime(count);
-                break;
-            case PERSISTED_GET_TIME:
-                count = getCountMetrics(MetricsConstants.TotalPersistedGetTime,metricsKey);
-                result.setPersitedGetTime(count);
-                break;
-            case TOTAL_GET_ERRORS:
-                count = getCountMetrics(MetricsConstants.TotalGetErrors,metricsKey);
-                result.setTotalGetErrors(count);
-                break;
-            case GET_ERRORS_TIME:
-                count = getCountMetrics(MetricsConstants.TotalGetErrorsTime,metricsKey);
-                result.setGetErrorsTime(count);
                 break;
             default:
                 break;

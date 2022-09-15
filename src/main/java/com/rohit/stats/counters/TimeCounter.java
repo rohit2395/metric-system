@@ -1,4 +1,4 @@
-package com.rohit.metrics.counters;
+package com.rohit.stats.counters;
 
 import com.codahale.metrics.Counter;
 
@@ -21,6 +21,7 @@ import com.codahale.metrics.Counter;
 
 public class TimeCounter extends Counter {
     private long start;
+    private long currentRecordedTime;
 
     public TimeCounter()
     {
@@ -44,11 +45,23 @@ public class TimeCounter extends Counter {
     public void setStartTime( long startTime ) {
         start = startTime; }
 
+    public long recordCurrentTime()
+    {
+        long end = System.currentTimeMillis();
+        long currentRecordedTime = end - start;
+        currentRecordedTime = currentRecordedTime / 1000;
+        System.out.println("Time taken to perform this operation: "+currentRecordedTime);
+        return currentRecordedTime;
+    }  // -- end of recordCurrentTime() --
+
+    @Override
+    public void inc(long n) {
+        currentRecordedTime = currentRecordedTime + n;
+    }
+
     @Override
     public long getCount()
     {
-        long end = System.currentTimeMillis();
-        long time = end - start;
-        return time;
-    }  // -- end of getCount() --
+        return currentRecordedTime;
+    }
 }
