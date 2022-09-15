@@ -12,36 +12,10 @@ import java.util.Set;
 /**
  * class - OverallMetrics
  *
- * This class is the core for Metric collection in MCStore.  It holds
- *    the metric Registry that is used via JMX to read the metrics.
+ * This class is the core for Metric collection.
+ * It holds the metric Registry that is used via JMX to read the metrics.
  *
- * This class creates all of the persistent metrics, and provides interfaces/methods
- *    to update them.
- *
- * This class also provides the interface to register transient metric data, such
- *    as for requests that are currently being processed.
- *
- * The way ICStore metrics works is as follows.
- *
- *    - There are persistent metrics, created and tracked by this Class.
- *      This class, OverallMetrics, is a STATIC class and provides static
- *      methods for users (JcloudPut/GetMetricSet for example) to update
- *      the metrics we persist and show to the user.
- *
- *    - To update the persistent metrics, another class must be created
- *      that knows how to gather and update said metrics.  If that class
- *      wants it's own transient data shown, it needs to create a MetricSet
- *      and register it with this class, using the registerMetricSet() method.
- *
- *    - cleanupMetricSet() must also be called if one was registered, otherwise,
- *      the transient metric objects will not be cleaned up, creating a memory leak.
- *
- * So, if someone wants to add JuJu metrics they'd add the corresponding "persistedJuJu"
- *    metrics to this class, along with corresponding methods to update those metrics.
- *    In some other class, "JuJuMetrics" they'd have the logic for how to gather those
- *    metrics and update the persisted data here, using the static methods.  If they
- *    also wanted to have transient data, they'd create a MetricSet object, and
- *    register it here (and clean it up when done).
+ * This class creates is meant for maintaining an overall metrics count for SVC
  *
  * The reason for making this just a static class, is that there would never be more
  *    than 1 instance of this class (a true singleton), and making everything static
@@ -70,12 +44,7 @@ public class OverallMetrics extends MetricsCounters implements MetricsConstants,
         return metricMap;
     }
 
-    /*
-     * OverallMetrics
-     *
-     * There's one of these per an instance of metrics key, or "default" metrics key instance that
-     *    folks like SVC will use
-     */
+
     private OverallMetrics() {
 
         registry = new MetricRegistry();
@@ -85,7 +54,6 @@ public class OverallMetrics extends MetricsCounters implements MetricsConstants,
         this.metricsKey = new MetricsKey(DEFAULT);
         metricMap = new HashMap<String,Metric>(6);
 
-//        System.out.println("Metric key: "+buildKey( TotalBytesDown ));
 
         // ---- Put "Put" Metrics into the map -----
         metricMap.put( buildKey( TotalBytesUp ),bytesUp );
@@ -103,10 +71,6 @@ public class OverallMetrics extends MetricsCounters implements MetricsConstants,
 
     /**
      * getMetrics()
-     *
-     * Either finds an exiting metric set (OverallMetrics) for the given metrics key instance,
-     *    or creates a new one if one doesn't exist.
-     *
      */
     public static OverallMetrics getOverallMetrics() {
 //        System.out.println("Getting overall metrics");
@@ -119,14 +83,6 @@ public class OverallMetrics extends MetricsCounters implements MetricsConstants,
 
     /*
      * buildKey()
-     *
-     * Helper routine, understands how we build/structure our keys for the
-     *    MetricMap.  Takes in a KeyId, and then assembles it with our
-     *    Base metric name (MCStore), and the container & csap, which for some callers
-     *    like SVC, will be "DEFAULT", and others, like GPFS, will be the
-     *    container & csap combination
-     *
-     *  Key = "MCStore.<container>.<csap>.metric-name"
      */
     private String buildKey( String keyId ) {
         String key = MetricRegistry.name(this.metricsKey.getKeyName(),keyId ) ;
@@ -141,14 +97,6 @@ public class OverallMetrics extends MetricsCounters implements MetricsConstants,
      *    be read/retrieved using JMX.  Callers must also be sure to
      *    cleanup by calling "cleanupMetricSet", otherwise, the metrics
      *    will exist in the registry for the life of the jvm.
-     *
-     * This is called by 2 different sets of users :
-     *   1 - this class.. implementing the base metrics for a file system, or
-     *       "root" key.
-     *   2 - Request specific metrics, like JCloudPutMetricSet which keeps
-     *       metrics around only as long as that request is running.  Once
-     *       that request is done, it calls the cleanupMetricSet() routine
-     *       to remove those "transient" metrics.
      *
      * @param metrics
      */
